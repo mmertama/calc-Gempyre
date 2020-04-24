@@ -5,12 +5,18 @@ project (${NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 
+
+
+set(TELEX_PATH $ENV{TELEX_DIR})
+
 include_directories(
-     ../../telexlib/include
+    ${TELEX_PATH}/telexlib/include
     include
 )
 
-find_package (telex REQUIRED PATHS ../..)
+find_package (telex REQUIRED PATHS ${TELEX_PATH})
+include(${TELEX_PATH}/scripts/addResource.cmake_script)
+
 
 add_executable(${PROJECT_NAME}
     src/computor.h
@@ -22,7 +28,7 @@ addResource(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gu
 
 add_custom_command(
         OUTPUT include/${NAME}.html.h
-        COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/genStringResource.py gui/${NAME}.html include/${NAME}.html.h WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND python ${TELEX_PATH}/scripts/genStringResource.py gui/${NAME}.html include/${NAME}.html.h WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS gui/${NAME}.html
         )
 
