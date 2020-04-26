@@ -104,7 +104,7 @@ private:
     double m_memory;
 
     const BinaryOperation BinaryOps = {
-        {Div, [](auto a, auto b){return a / b;}},
+        {Div, [](auto a, auto b){return b != 0 ? a / b : std::nan("");}},
         {Mul, [](auto a, auto b){return a * b;}},
         {Plus, [](auto a, auto b){return a + b;}},
         {Minus, [](auto a, auto b){return a - b;}},
@@ -172,6 +172,9 @@ private:
             if(std::isnan(m_value0) || std::isnan(m_value1))
                 return State::Err;
             m_value0 = m_bop->second(m_value0, m_value1);
+            if(std::isnan(m_value0)) {
+                return State::Err;
+            }
             m_memory = m_value0;
             return State::Resp;
         }
