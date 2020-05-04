@@ -31,17 +31,17 @@ int main(int /*argc*/, char** /*argv*/) {
      return 1;
     */
 
-    const std::string miniview = TelexUtils::systemEnv("TELEX-EXTENSION") ;
+    const std::string miniview = TelexUtils::systemEnv("TELEX_EXTENSION") ;
 	if(miniview.empty()) {
-        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX-EXTENSION is not set");
+        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX_EXTENSION is not set");
 	}
     else if(!TelexUtils::fileExists(miniview)) {
-        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX-EXTENSION", miniview, "is not found");
+        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX_EXTENSION", miniview, "is not found");
 	}
     Telex::Ui ui({{"/calc.html", Calchtml}, {"/calc.css", Calccss}, {"/calc.png", Calcpng}},
                  "calc.html",
                  miniview,
-                 miniview.empty() ? "" : "280 355 Calculator");
+                 miniview.empty() ? "" : "280 365 Calculator");
 
 
     auto operation = [&comp](Telex::Element& screenEl, Telex::Element& resultEl, const std::string& op) mutable {
