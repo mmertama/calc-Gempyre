@@ -1,4 +1,4 @@
-# calc-Telex
-Graphics Calculator using Telex UI framework
+# calc-Gempyre
+Graphics Calculator using Gempyre UI framework
 
-Set TELEX_DIR environment variable to <your path to>/Telex-framework
+Set GEMPYRE_DIR environment variable to <your path to>/Gempyre framework directory.

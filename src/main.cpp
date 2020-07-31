@@ -1,5 +1,5 @@
-#include <telex.h>
-#include <telex_utils.h>
+#include <gempyre.h>
+#include <gempyre_utils.h>
 #include <cstdlib>
 #include <tuple>
 #include <cmath>
@@ -11,16 +11,16 @@ std::string trim(const std::string& s) {
     return f == std::string::npos ? "0" : s.substr(f);
 }
 
-Telex::Element::Elements getClass(Telex::Ui& ui, const std::string& name) {
+Gempyre::Element::Elements getClass(Gempyre::Ui& ui, const std::string& name) {
     auto els = ui.byClass(name);
-    telex_utils_assert_x(els.has_value(), "Cannot get " + name);
+    gempyre_utils_assert_x(els.has_value(), "Cannot get " + name);
     auto v = els.value();
-    telex_utils_assert_x(!v.empty(), "Cannot find " + name);
+    gempyre_utils_assert_x(!v.empty(), "Cannot find " + name);
     return v;
 }
 
 int main(int /*argc*/, char** /*argv*/) {
- //   Telex::setDebug();
+    //Gempyre::setDebug();
     Computor::Computor comp;
  /*   std::vector<std::string> input = {"0", "0", "1", "2", "0", ".", ".", "3", "4", "+", "2", "1", "=", Computor::Sqrt, "3", "9", Computor::Exp2, ".", Computor::Denom, "9", Computor::Denom, "6", Computor::Exp, "="};
     Computor::Computor comp;
@@ -31,20 +31,20 @@ int main(int /*argc*/, char** /*argv*/) {
      return 1;
     */
 
-    const std::string miniview = TelexUtils::systemEnv("TELEX_EXTENSION") ;
+    const std::string miniview = GempyreUtils::systemEnv("GEMPYRE_EXTENSION") ;
 	if(miniview.empty()) {
-        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX_EXTENSION is not set");
+        GempyreUtils::log(GempyreUtils::LogLevel::Error, "GEMPYRE_EXTENSION is not set");
 	}
-    else if(!TelexUtils::fileExists(miniview)) {
-        TelexUtils::log(TelexUtils::LogLevel::Error, "TELEX_EXTENSION", miniview, "is not found");
+    else if(!GempyreUtils::fileExists(miniview)) {
+        GempyreUtils::log(GempyreUtils::LogLevel::Error, "GEMPYRE_EXTENSION", miniview, "is not found");
 	}
-    Telex::Ui ui({{"/calc.html", Calchtml}, {"/calc.css", Calccss}, {"/calc.png", Calcpng}},
+    Gempyre::Ui ui({{"/calc.html", Calchtml}, {"/calc.css", Calccss}, {"/calc.png", Calcpng}},
                  "calc.html",
                  miniview,
                  miniview.empty() ? "" : "280 365 Calculator");
 
 
-    auto operation = [&comp](Telex::Element& screenEl, Telex::Element& resultEl, const std::string& op) mutable {
+    auto operation = [&comp](Gempyre::Element& screenEl, Gempyre::Element& resultEl, const std::string& op) mutable {
         const auto r = comp.push(op);
         screenEl.setHTML(r.has_value() ? Computor::toString(r.value()) : "ERR");
         const auto m = comp.memory();
@@ -56,24 +56,24 @@ int main(int /*argc*/, char** /*argv*/) {
         total.setHTML("0");
         auto last = getClass(ui, "last")[0];
         const auto ce = getClass(ui, "calculator")[0];
-        std::function<void (const Telex::Element& )> getChildren;
-        getChildren = [total, last, operation, &getChildren] (const Telex::Element& ce) mutable {
+        std::function<void (const Gempyre::Element& )> getChildren;
+        getChildren = [total, last, operation, &getChildren] (const Gempyre::Element& ce) mutable {
             auto children = ce.children();
-            telex_utils_assert_x(children.has_value(), "Cannot find calculator elements");
+            gempyre_utils_assert_x(children.has_value(), "Cannot find calculator elements");
             for(auto& el : children.value()) {
-                TelexUtils::log(TelexUtils::LogLevel::Info, "el id", el.id());
+                GempyreUtils::log(GempyreUtils::LogLevel::Info, "el id", el.id());
                 const auto atv = el.attributes();
-                telex_utils_assert_x(atv.has_value(), "Cannot read calculator element attributes");
+                gempyre_utils_assert_x(atv.has_value(), "Cannot read calculator element attributes");
                 const auto attrs = atv.value();
-                TelexUtils::log(TelexUtils::LogLevel::Info, "attributes", el.id(), TelexUtils::joinPairs(attrs.begin(), attrs.end()));
+                GempyreUtils::log(GempyreUtils::LogLevel::Info, "attributes", el.id(), GempyreUtils::joinPairs(attrs.begin(), attrs.end()));
                 auto vit = attrs.find("class");
                 if(vit != attrs.end()) {
                     const auto pos = vit->second.find("calc_");
                     if(pos != std::string::npos) {
                          const auto value = attrs.find("value");
-                         telex_utils_assert_x(value != attrs.end(), "button has no value");
+                         gempyre_utils_assert_x(value != attrs.end(), "button has no value");
                          const auto key = value->second;
-                         el.subscribe("click", [key, total, last, operation] (const Telex::Event&) mutable {
+                         el.subscribe("click", [key, total, last, operation] (const Gempyre::Event&) mutable {
                             operation(total, last, key);
                          });
                      }
