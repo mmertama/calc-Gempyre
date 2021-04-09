@@ -1,20 +1,18 @@
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.14)
 
 set(NAME calc)
 project (${NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 
-
 set(GEMPYRE_PATH $ENV{GEMPYRE_DIR})
 
 include_directories(
-    ${GEMPYRE_PATH}/gempyrelib/include
     include
 )
 
-find_package (gempyre REQUIRED PATHS ${GEMPYRE_PATH})
-include(${GEMPYRE_PATH}/scripts/addResource.cmake_script)
+find_package (gempyre REQUIRED)
+include(addResource)
 
 
 add_executable(${PROJECT_NAME}
@@ -31,5 +29,5 @@ add_custom_command(
         DEPENDS gui/${NAME}.html
         )
 
-target_link_libraries (${PROJECT_NAME} gempyre)
+target_link_libraries (${PROJECT_NAME} gempyre::gempyre)
 

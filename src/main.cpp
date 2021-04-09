@@ -65,7 +65,10 @@ int main(int /*argc*/, char** /*argv*/) {
                 const auto atv = el.attributes();
                 gempyre_utils_assert_x(atv.has_value(), "Cannot read calculator element attributes");
                 const auto attrs = atv.value();
-                GempyreUtils::log(GempyreUtils::LogLevel::Info, "attributes", el.id(), GempyreUtils::joinPairs(attrs.begin(), attrs.end()));
+                GempyreUtils::log(GempyreUtils::LogLevel::Info, "attributes", el.id(),
+                                  GempyreUtils::join<decltype (attrs), decltype (attrs)::value_type, std::string>(attrs, ",", [](const auto& p) {
+                                                         return p.first + ":" + p.second;
+                                                     }));
                 auto vit = attrs.find("class");
                 if(vit != attrs.end()) {
                     const auto pos = vit->second.find("calc_");
