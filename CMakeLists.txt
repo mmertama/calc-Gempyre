@@ -5,14 +5,14 @@ project (${NAME})
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(GEMPYRE_PATH $ENV{GEMPYRE_DIR})
-
 include_directories(
     include
 )
 
 find_package (gempyre REQUIRED)
-include(addResource)
+include(hiillos)
+include(gempyre)
+
 
 
 add_executable(${PROJECT_NAME}
@@ -21,7 +21,8 @@ add_executable(${PROJECT_NAME}
     gui/${NAME}.html
     )
 
-addResource(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gui/${NAME}.html gui/${NAME}.css gui/${NAME}.png)
+gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gui/${NAME}.html gui/${NAME}.css gui/${NAME}.png)
+hiillos_make_application(${PROJECT_NAME})
 
 add_custom_command(
         OUTPUT include/${NAME}.html.h
@@ -29,5 +30,5 @@ add_custom_command(
         DEPENDS gui/${NAME}.html
         )
 
-target_link_libraries (${PROJECT_NAME} gempyre::gempyre)
 
+target_link_libraries (${PROJECT_NAME} gempyre::gempyre)

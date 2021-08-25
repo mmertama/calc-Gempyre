@@ -19,8 +19,11 @@ Gempyre::Element::Elements getClass(Gempyre::Ui& ui, const std::string& name) {
     return v;
 }
 
-int main(int /*argc*/, char** /*argv*/) {
-    //Gempyre::setDebug();
+int main(int argc, char** argv) {
+ //   Gempyre::setDebug();
+  //  GempyreUtils::StreamLogWriter ss(std::cerr);
+  //  GempyreUtils::setLogWriter(&ss);
+  //  GempyreUtils::logDebug("Log debug");
     Computor::Computor comp;
  /*   std::vector<std::string> input = {"0", "0", "1", "2", "0", ".", ".", "3", "4", "+", "2", "1", "=", Computor::Sqrt, "3", "9", Computor::Exp2, ".", Computor::Denom, "9", Computor::Denom, "6", Computor::Exp, "="};
     Computor::Computor comp;
@@ -31,17 +34,9 @@ int main(int /*argc*/, char** /*argv*/) {
      return 1;
     */
 
-    const std::string miniview = GempyreUtils::systemEnv("GEMPYRE_EXTENSION") ;
-	if(miniview.empty()) {
-        GempyreUtils::log(GempyreUtils::LogLevel::Error, "GEMPYRE_EXTENSION is not set");
-	}
-    else if(!GempyreUtils::fileExists(miniview)) {
-        GempyreUtils::log(GempyreUtils::LogLevel::Error, "GEMPYRE_EXTENSION", miniview, "is not found");
-	}
-    Gempyre::Ui ui({{"/calc.html", Calchtml}, {"/calc.css", Calccss}, {"/calc.png", Calcpng}},
+    Gempyre::Ui ui(Calc_resourceh,
                  "calc.html",
-                 miniview,
-                 miniview.empty() ? "" : "280 365 Calculator");
+                 argc, argv, Gempyre::Ui::stdParams(422, 560, "Calculator"));
 
 
     auto operation = [&comp](Gempyre::Element& screenEl, Gempyre::Element& resultEl, const std::string& op) mutable {
