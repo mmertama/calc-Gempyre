@@ -20,7 +20,7 @@ Gempyre::Element::Elements getClass(Gempyre::Ui& ui, const std::string& name) {
 }
 
 int main(int argc, char** argv) {
- //   Gempyre::setDebug();
+     Gempyre::setDebug();
   //  GempyreUtils::StreamLogWriter ss(std::cerr);
   //  GempyreUtils::setLogWriter(&ss);
   //  GempyreUtils::logDebug("Log debug");
@@ -36,7 +36,10 @@ int main(int argc, char** argv) {
 
     Gempyre::Ui ui(Calc_resourceh,
                  "calc.html",
-                 argc, argv, Gempyre::Ui::stdParams(422, 560, "Calculator"));
+                 argc, argv, Gempyre::Ui::stdParams(
+                       422,
+                       560,
+                       "Calculator"));
 
 
     auto operation = [&comp](Gempyre::Element& screenEl, Gempyre::Element& resultEl, const std::string& op) mutable {
@@ -80,6 +83,9 @@ int main(int argc, char** argv) {
             }
         };
         getChildren(ce);
+        const auto ce_rect = ce.rect();
+        if(ce_rect)
+            ui.resize(ce_rect->width, ce_rect->height);
     });
     ui.run();
     return 0;

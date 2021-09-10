@@ -13,15 +13,19 @@ find_package (gempyre REQUIRED)
 include(hiillos)
 include(gempyre)
 
-
-
 add_executable(${PROJECT_NAME}
     src/computor.h
     src/main.cpp
-    gui/${NAME}.html
+    )
+
+target_sources(
+    ${PROJECT_NAME} PRIVATE
+    gui/calc.html
+    gui/calc.css
     )
 
 gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gui/${NAME}.html gui/${NAME}.css gui/${NAME}.png)
+
 hiillos_make_application(${PROJECT_NAME})
 
 add_custom_command(

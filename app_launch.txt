@@ -1,0 +1,1 @@
+http://localhost:30000/calc.html  --gempyre-width=422 --gempyre-height=560 --gempyre-title=\"Calculator\"  --gempyre-app=build/Release/gempyre_calc
