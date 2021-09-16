@@ -24,6 +24,8 @@ target_sources(
     gui/calc.css
     )
 
+set(APP_ICON ${CMAKE_SOURCE_DIR}/gui/calc.png)
+
 gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gui/${NAME}.html gui/${NAME}.css gui/${NAME}.png)
 
 hiillos_make_application(${PROJECT_NAME})
