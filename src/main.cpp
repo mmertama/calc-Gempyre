@@ -7,41 +7,25 @@
 #include "calc_resource.h"
 
 std::string trim(const std::string& s) {
-    auto f = s.find_first_not_of('0');
+    const auto f = s.find_first_not_of('0');
     return f == std::string::npos ? "0" : s.substr(f);
 }
 
 Gempyre::Element::Elements getClass(Gempyre::Ui& ui, const std::string& name) {
-    auto els = ui.byClass(name);
+    const auto els = ui.byClass(name);
     gempyre_utils_assert_x(els.has_value(), "Cannot get " + name);
-    auto v = els.value();
+    const auto v = els.value();
     gempyre_utils_assert_x(!v.empty(), "Cannot find " + name);
     return v;
 }
 
-int main(int argc, char** argv) {
-     Gempyre::setDebug();
-  //  GempyreUtils::StreamLogWriter ss(std::cerr);
-  //  GempyreUtils::setLogWriter(&ss);
-  //  GempyreUtils::logDebug("Log debug");
+int main(int /*argc*/, char** /*argv*/) {
+    // GempyreUtils::setLogLevel(GempyreUtils::LogLevel::Debug);
     Computor::Computor comp;
- /*   std::vector<std::string> input = {"0", "0", "1", "2", "0", ".", ".", "3", "4", "+", "2", "1", "=", Computor::Sqrt, "3", "9", Computor::Exp2, ".", Computor::Denom, "9", Computor::Denom, "6", Computor::Exp, "="};
-    Computor::Computor comp;
-    for(const auto& i : input) {
-        const auto r =  comp.push(i);
-        Utils::log(Utils::LogLevel::Info, "Add", i, "out is", r.has_value() ? toString(r.value()) : "ERR");
-    }
-     return 1;
-    */
 
-    Gempyre::Ui ui(Calc_resourceh,
-                 "calc.html",
-                 argc, argv, Gempyre::Ui::stdParams(
-                       422,
-                       560,
-                       "Calculator"));
-
-
+    Gempyre::Ui ui(Calc_resourceh, "calc.html", "Calculator", 280, 320,  Gempyre::Ui::NoResize);
+    //Gempyre::Ui ui(Calc_resourceh, "calc.html", GempyreUtils::htmlFileLaunchCmd(), "");
+    ui.setLogging(true);
     auto operation = [&comp](Gempyre::Element& screenEl, Gempyre::Element& resultEl, const std::string& op) mutable {
         const auto r = comp.push(op);
         screenEl.setHTML(r.has_value() ? Computor::toString(r.value()) : "ERR");
@@ -53,9 +37,9 @@ int main(int argc, char** argv) {
         auto total = getClass(ui, "total")[0];
         total.setHTML("0");
         auto last = getClass(ui, "last")[0];
-        const auto ce = getClass(ui, "calculator")[0];
+        const auto calc_id = getClass(ui, "calculator")[0];
         std::function<void (const Gempyre::Element& )> getChildren;
-        getChildren = [total, last, operation, &getChildren] (const Gempyre::Element& ce) mutable {
+        getChildren = [total, last, operation, &getChildren] (const Gempyre::Element& ce) {
             auto children = ce.children();
             gempyre_utils_assert_x(children.has_value(), "Cannot find calculator elements");
             for(auto& el : children.value()) {
@@ -67,7 +51,7 @@ int main(int argc, char** argv) {
                                   GempyreUtils::join<decltype (attrs), decltype (attrs)::value_type, std::string>(attrs, ",", [](const auto& p) {
                                                          return p.first + ":" + p.second;
                                                      }));
-                auto vit = attrs.find("class");
+                const auto vit = attrs.find("class");
                 if(vit != attrs.end()) {
                     const auto pos = vit->second.find("calc_");
                     if(pos != std::string::npos) {
@@ -79,14 +63,30 @@ int main(int argc, char** argv) {
                          });
                      }
                  }
-                getChildren(el);
+                getChildren(el); // recursive
             }
         };
-        getChildren(ce);
-        const auto ce_rect = ce.rect();
-        if(ce_rect)
+        getChildren(calc_id);
+        /*The given UI size may not be correct for all platorms so we can ask after
+        render and resize the UI as a workaround*/
+        const auto ce_rect = ui.root().rect();//ce.rect();
+        if(ce_rect) {
             ui.resize(ce_rect->width, ce_rect->height);
+        } else {
+            GempyreUtils::log(GempyreUtils::LogLevel::Error, "rect N/A");
+        }
     });
     ui.run();
     return 0;
 }
+
+/*
+ *   Some test code kept
+    std::vector<std::string> input = {"0", "0", "1", "2", "0", ".", ".", "3", "4", "+", "2", "1", "=", Computor::Sqrt, "3", "9", Computor::Exp2, ".", Computor::Denom, "9", Computor::Denom, "6", Computor::Exp, "="};
+   Computor::Computor comp;
+   for(const auto& i : input) {
+       const auto r =  comp.push(i);
+       Utils::log(Utils::LogLevel::Info, "Add", i, "out is", r.has_value() ? toString(r.value()) : "ERR");
+   }
+    return 1;
+*/

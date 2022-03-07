@@ -10,7 +10,6 @@ include_directories(
 )
 
 find_package (gempyre REQUIRED)
-include(hiillos)
 include(gempyre)
 
 add_executable(${PROJECT_NAME}
@@ -27,14 +26,5 @@ target_sources(
 set(APP_ICON ${CMAKE_SOURCE_DIR}/gui/calc.png)
 
 gempyre_add_resources(PROJECT ${PROJECT_NAME} TARGET include/${NAME}_resource.h SOURCES gui/${NAME}.html gui/${NAME}.css gui/${NAME}.png)
-
-hiillos_make_application(${PROJECT_NAME})
-
-add_custom_command(
-        OUTPUT include/${NAME}.html.h
-        COMMAND python ${GEMPYRE_PATH}/scripts/genStringResource.py gui/${NAME}.html include/${NAME}.html.h WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS gui/${NAME}.html
-        )
-
 
 target_link_libraries (${PROJECT_NAME} gempyre::gempyre)
