@@ -12,7 +12,7 @@ std::string trim(const std::string& s) {
 }
 
 Gempyre::Element::Elements getClass(Gempyre::Ui& ui, const std::string& name) {
-    const auto els = ui.byClass(name);
+    const auto els = ui.by_class(name);
     gempyre_utils_assert_x(els.has_value(), "Cannot get " + name);
     const auto v = els.value();
     gempyre_utils_assert_x(!v.empty(), "Cannot find " + name);
@@ -25,21 +25,23 @@ int main(int /*argc*/, char** /*argv*/) {
 
     Gempyre::Ui ui(Calc_resourceh, "calc.html", "Calculator", 280, 320,  Gempyre::Ui::NoResize);
     //Gempyre::Ui ui(Calc_resourceh, "calc.html", GempyreUtils::htmlFileLaunchCmd(), "");
-    ui.setLogging(true);
+    ui.set_logging(true);
     auto operation = [&comp](Gempyre::Element& screenEl, Gempyre::Element& resultEl, const std::string& op) mutable {
         const auto r = comp.push(op);
-        screenEl.setHTML(r.has_value() ? Computor::toString(r.value()) : "ERR");
+        screenEl.set_html(r.has_value() ? Computor::toString(r.value()) : "ERR");
         const auto m = comp.memory();
-        resultEl.setHTML(m.has_value() ? Computor::toString(m.value()) : "");
+        resultEl.set_html(m.has_value() ? Computor::toString(m.value()) : "");
     };
 
-    ui.onOpen([&ui, operation]() mutable {
-        auto total = getClass(ui, "total")[0];
-        total.setHTML("0");
-        auto last = getClass(ui, "last")[0];
+    ui.on_open([&ui, &operation]() mutable {
+        auto totalElement = getClass(ui, "total")[0];
+        totalElement.set_html("0");
+        const auto totalId = totalElement.id();
+        const auto lastElement = getClass(ui, "last")[0];
+        const auto lastId = lastElement.id();
         const auto calc_id = getClass(ui, "calculator")[0];
         std::function<void (const Gempyre::Element& )> getChildren;
-        getChildren = [total, last, operation, &getChildren] (const Gempyre::Element& ce) {
+        getChildren = [&ui, totalId, lastId, &operation, &getChildren] (const Gempyre::Element& ce) {
             auto children = ce.children();
             gempyre_utils_assert_x(children.has_value(), "Cannot find calculator elements");
             for(auto& el : children.value()) {
@@ -58,7 +60,10 @@ int main(int /*argc*/, char** /*argv*/) {
                          const auto value = attrs.find("value");
                          gempyre_utils_assert_x(value != attrs.end(), "button has no value");
                          const auto key = value->second;
-                         el.subscribe("click", [key, total, last, operation] (const Gempyre::Event&) mutable {
+                         el.subscribe("click", [&ui, key, totalId, lastId, &operation] (const Gempyre::Event& ev) {
+                            GempyreUtils::log(GempyreUtils::LogLevel::Info, lastId);
+                            auto last = Gempyre::Element(ui, lastId);
+                            auto total = Gempyre::Element(ui, totalId);
                             operation(total, last, key);
                          });
                      }
